@@ -9,8 +9,5 @@ cc_library(
     deps = [
         "//tt:ttlib"
     ],
-    visibility = ["//visibility:public"],
-    copts = [
-        "-mavx"
-    ]
+    visibility = ["//visibility:public"]
 )

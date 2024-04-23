@@ -33,11 +33,11 @@ namespace tt
 
                 constexpr TT_ALWAYS_INLINE int FindNext(const Base::BlockType& a, int pos ) const noexcept {
                     if(a[0] >> pos == 0) {
-                        DOUT << "BLOCKEND" << DEND;
+                        //DOUT << "BLOCKEND" << DEND;
                         return 8 * sizeof(typename Base::BlockType);
                     }
-                    DOUT << "Value: " << (a[0] >> pos) << DEND;
-                    DOUT << "Pos: " << pos << DEND;
+                    //DOUT << "Value: " << (a[0] >> pos) << DEND;
+                    //DOUT << "Pos: " << pos << DEND;
                     return TT_COUNT_TRAILING_BITSLL(a[0] >> pos) + pos;
                 }
             };
