@@ -64,32 +64,41 @@ namespace tt
 
                 template<size_t _Size, typename _Op, bool __M_R = bitset<_Size, _Op>::RSize_ == RSize_>
                     requires __M_R
-                void Xor(const bitset<_Size, _Op>& b) const noexcept {
+                void Xor(const bitset<_Size, _Op>& b) noexcept {
                     _Operation op;
                     for(size_t i = 0; i < RSize_; i++)
                         op.Xor(Data_[i], b.Data_[i]);
                 }
 
                 int FindNext(int pos) const noexcept {
-                    DBLOCK("FindNext");
-                    DOUT << "Pos: " << pos << DEND;
+                    //DBLOCK("FindNext");
+                    //DOUT << "Pos: " << pos << DEND;
                     _Operation op;
 
                     constexpr const int block_bits = sizeof(BlockType_) * 8;
                     int block = pos / block_bits;
+                    //DOUT << "Data: " << Data_[block][0] << DEND;
                     int np = op.FindNext(Data_[block], pos % block_bits);
 
-                    while(block < RSize_ && np == block_bits)
+                    while(block + 1 < RSize_ && np == block_bits)
                     {
-                        np = op.FindNext(Data_[block], 0);
                         block++;
+                        np = op.FindNext(Data_[block], 0);
                     }
-                    DOUT << "Block: " << block << DEND;
-                    DOUT << "Np: " << np;
-                    DENDBLOCK;
+                    //DOUT << "BlockBitSize: " << block_bits << DEND;
+                    //DOUT << "Block: " << block << DEND;
+                    //DOUT << "Np: " << np << DEND;
+                    //DOUT << "Res: " << np + block * block_bits;
+                    //DEN//DBLOCK;
                     return np + block * block_bits;
                 }
             };
         }
+
+        template<size_t size>
+        using CPPBitset = bitset_opt::bitset<size, tt::structures::bitset_opt::cpp_operation<>>;
+
+        template<size_t size>
+        using AVXBitset = bitset_opt::bitset<size, tt::structures::bitset_opt::avx_operation<>>;
     }
 }

@@ -21,7 +21,7 @@ namespace tt
             private:
                 inline static dout *inst_{nullptr};
                 
-                std::ostream *os_;
+                std::ostream *os_{nullptr};
                 bool nline_ = true;
                 std::stack<block> blocks_{};
 
@@ -43,6 +43,8 @@ namespace tt
 
                 static dout &instance()
                 {
+                    if(inst_ == nullptr)
+                        init(nullptr);
                     return *inst_;
                 }
 
@@ -52,6 +54,8 @@ namespace tt
                 }
 
                 dout& operator<<(end_row&& a) {
+                    if(os_ == nullptr)
+                        return *this;
                     if(nline_)
                         return *this;
                     (*os_) << '\n';
@@ -63,6 +67,8 @@ namespace tt
                 template <typename T>
                 dout &operator<<(T &&obj)
                 {
+                    if(os_ == nullptr)
+                        return *this;
                     (*os_) << obj;
                     nline_ = false;
                     return *this;

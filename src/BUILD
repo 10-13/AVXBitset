@@ -6,5 +6,6 @@ cc_binary(
         "-mavx",
         "-mavx2",
         "-std=c++20",
+        "-O3"
     ]
 )

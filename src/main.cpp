@@ -8,11 +8,7 @@
 
 #include "tt/dout/dout.h"
 
-using AVX_OP = tt::structures::bitset_opt::avx_operation<>;
-using CPP_OP = tt::structures::bitset_opt::cpp_operation<>;
-using bitset512 = tt::structures::bitset_opt::bitset<512, AVX_OP>;
-
-using namespace tt::util::debug;
+using namespace tt::structures;
 
 template<typename T, size_t Size>
 void RandomizeBitset(tt::structures::bitset_opt::bitset<Size, T>& bs) {
@@ -21,11 +17,30 @@ void RandomizeBitset(tt::structures::bitset_opt::bitset<Size, T>& bs) {
 }
 
 int main() {
-    dout::init(&std::cout) << "Test";
-    dout::instance() << block{"main"};
-    bitset512 bs1{};
-    bs1.GetByte(0) = 0x88;
-    dout::instance() << bs1.FindNext(bs1.FindNext(0) + 1);
-    dout::instance() << end_block{};
+    std::cout << std::hex;
+    //tt::util::debug::dout::init(&std::cout);
+    CPPBitset<512> a;
+    a.Xor(a);
+    AVXBitset<512> b;
+    b.Xor(b);
+    for (int i = 0; i <= 1e8; i++) {
+        //std::cout << "RND" << std::endl;
+        RandomizeBitset(a);
+        for (size_t i = 0; i < a.SizeBytes; i++) {
+            b.GetByte(i) = a.GetByte(i);
+        }
+        //std::cout << "RND1" << std::endl;
+
+        int pos = rand() % 512;
+
+        //std::cout << b.GetByte(0) << "\n";
+        if (a.FindNext(pos) != b.FindNext(pos)) {
+            std::cout << "Error\n";
+            return 0;
+        }
+    }
+
+    std::cout << "Ok\n";
+
     return 0;
 }
