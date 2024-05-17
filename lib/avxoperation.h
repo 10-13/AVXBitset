@@ -51,51 +51,26 @@ namespace tt
                 }
 
                 constexpr TT_ALWAYS_INLINE int FindNext(const Base::BlockType& a, int pos ) const noexcept {
-                    //DBLOCK("FindNextOp");
-
-                    //DBLOCK("Args");
-                    //DOUT << "&A:  " << &a << DEND;
-                    //DOUT << "A:   " << a[3] << ' ' << a[2] << ' ' << a[1] << ' ' << a[0] << DEND;
-                    //DOUT << "Pos: " << pos;
-                    //DEN//DBLOCK;
-
                     __m256i _a = _mm256_load_si256((__m256i*)(&a));
                     if(_mm256_testz_si256(_a, _a) == 1) {
-                        //DOUT << "OUT: Zero reg";
-                        //DEN//DBLOCK;
                         return 8 * sizeof(typename Base::BlockType);
                     }
                     _a = _mm256_cmpeq_epi64(_a, tmpzero);
                     __m256d _b = _mm256_castsi256_pd(_a);
                     int block = pos / (sizeof(typename Base::StoreType) * 8);
                     unsigned msk = ~_mm256_movemask_pd(_b);
-                    //DOUT << ~_mm256_movemask_pd(_b) << DEND;
                     msk &= 0xf;
-                    //DOUT << "Msk: " << msk << DEND;
                     msk >>= block;
                     if(msk % 2 == 1 && (a[block] >> (pos % (sizeof(typename Base::StoreType) * 8))) == 0) {
                         msk ^= 0x1;
-                        //DOUT << "Clear mask top: " << msk << DEND;
                     }
                     else if(msk % 2 == 1) {
-                        //DOUT << "Shift: " << pos % (sizeof(typename Base::StoreType) * 8) << DEND;
-                        //DOUT << "Block value: " << (a[block] >> (pos % (sizeof(typename Base::StoreType) * 8))) << DEND;
-                        //DOUT << "Res: " << (TT_COUNT_TRAILING_BITS(a[block] >> (pos % (sizeof(typename Base::StoreType) * 8))) + pos)  << DEND;
-                        //DOUT << "OUT: Same block";
-                        //DEN//DBLOCK;
                         return TT_COUNT_TRAILING_BITS(a[block] >> (pos % (sizeof(typename Base::StoreType) * 8))) + pos;
                     }
                     if(msk == 0) {
-                        //DOUT << "OUT: Zero msk";
-                        //DEN//DBLOCK;
                         return 8 * sizeof(typename Base::BlockType);
                     }
                     block += TT_COUNT_TRAILING_BITS(msk);
-                    //DOUT << "Block: " << block << DEND;
-                    //DOUT << "Pos: " << TT_COUNT_TRAILING_BITSLL(a[block]) << DEND;
-                    //DOUT << "Res: " << TT_COUNT_TRAILING_BITSLL(a[block]) + block * (sizeof(typename Base::StoreType) * 8) << DEND;
-                    //DOUT << "OUT: Default";
-                    //DEN//DBLOCK;
                     return TT_COUNT_TRAILING_BITSLL(a[block]) + block * (sizeof(typename Base::StoreType) * 8);
                 }
             };
